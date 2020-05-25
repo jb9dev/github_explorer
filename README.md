@@ -1,7 +1,9 @@
-<!-- TODO: Inserir uma descrição para o projeto -->
+# Github Explore
 
 ## Descrição
 Esse é um projeto que é feito no bootcamp da Rocketseat para fazer uma introdução ao React. Aqui inicialmente o projeto está sendo feito da mesma forma como é apresentado no treinamento, mas futuramente implementarei mais funcionalidades que sejam interessantes e pertinentes à ideia.
+
+<!-- TODO: Inserir informações sobre tecnologias utilizadas, como o projeto é e as orientações para rodar o projeto localmente -->
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
