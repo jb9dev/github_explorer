@@ -1,9 +1,13 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { shade, grayscale } from 'polished';
 
 import { colors } from '../../global/variables';
 
 const { dark, dark2, green, grey, grey2, grey3, light, red } = colors;
+
+interface FormProps {
+  messageStatus: string;
+}
 
 export const Title = styled.h1`
   max-width: 450px;
@@ -13,7 +17,7 @@ export const Title = styled.h1`
   line-height: 56px;
 `;
 
-export const Form = styled.form`
+export const Form = styled.form<FormProps>`
   display: flex;
   max-width: 715px;
   margin-top: 40px;
@@ -74,6 +78,10 @@ export const Form = styled.form`
       background: ${grayscale(green)};
       cursor: not-allowed;
     }
+
+    ${({messageStatus}) => messageStatus === 'error' && css`
+      background-color: ${red};
+    `}
 
     @media (min-width: 1024px) {
       width: 210px;
