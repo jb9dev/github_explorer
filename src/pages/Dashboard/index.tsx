@@ -5,7 +5,7 @@ import api from '../../services/api';
 
 import logoImg from '../../assets/logo.svg';
 
-import { Title, Form, Repositories } from './styles';
+import { Title, Form, Repositories, Message } from './styles';
 
 interface Repository {
   full_name: string;
@@ -19,6 +19,8 @@ interface Repository {
 const Dashboard: React.FC = () => {
   const [repositories, setRepositories] = useState<Repository[]>([]);
   const [newRepository, setNewRepository] = useState('');
+  const [message, setMessage] = useState('');
+  const [messageClass, setMessageClass] = useState('');
 
   async function handleAddRepository(event: FormEvent<HTMLFormElement>):
     Promise<void> {
@@ -28,6 +30,15 @@ const Dashboard: React.FC = () => {
 
       setRepositories([...repositories, repository]);
       setNewRepository('');
+      setMessage('Repositório adicionado com sucesso ao final da lista!')
+      setTimeout(() => {
+        setMessageClass('message-added');
+      }, 3000)
+
+      setTimeout(() => {
+        setMessage('');
+        setMessageClass('');
+      }, 3500)
     }
 
   return (
@@ -41,6 +52,7 @@ const Dashboard: React.FC = () => {
           placeholder="Digite o nome do repositório" />
         <button type="submit">Pesquisar</button>
       </Form>
+      <Message className={messageClass}>{message}</Message>
       <Repositories>
       {
         repositories.map(repository => (

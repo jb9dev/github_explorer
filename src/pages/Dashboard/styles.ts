@@ -50,6 +50,18 @@ export const Form = styled.form`
   }
 `;
 
+export const Message = styled.span`
+  display: block;
+  height: 16px;
+  margin: 10px 0;
+  color: ${green};
+  transition: opacity 300ms ease-in;
+
+  &.message-added {
+    opacity: 0;
+  }
+`;
+
 export const Repositories = styled.div`
   max-width: 715px;
   margin-top: 60px;
