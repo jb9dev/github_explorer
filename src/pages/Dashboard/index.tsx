@@ -26,23 +26,24 @@ const Dashboard: React.FC = () => {
   const messageInitialState = { text: '', status: '', autoRemove: true };
 
   const [disableSubmit, setDisableSubmit] = useState(true);
-  const [repositories, setRepositories] = useState<Repository[]>([]);
+  const [repositories, setRepositories] = useState<Repository[]>(() => {
+    const localRepositoriesStoraged = localStorage.getItem(
+      '@GithubExplore:repositories'
+    );
+    if (localRepositoriesStoraged) {
+      return JSON.parse(localRepositoriesStoraged);
+    } else {
+      return []
+    }
+  });
   const [githubUser, setGithubUser] = useState('');
   const [repositoryName, setRepositoryName] = useState('');
   const [message, setMessage] = useState(messageInitialState);
   const [messageClass, setMessageClass] = useState('');
 
   useEffect(() => {
-    const localRepositoriesStoraged = localStorage.getItem('githubRepositories');
-    if (localRepositoriesStoraged) {
-      const repositoriesStoraged = JSON.parse(localRepositoriesStoraged);
-      repositoriesStoraged.length && setRepositories(repositoriesStoraged);
-    }
-  }, [])
-
-  useEffect(() => {
     localStorage.setItem(
-      'githubRepositories',
+      '@GithubExplore:repositories',
       JSON.stringify(repositories)
     );
   }, [repositories])
@@ -79,7 +80,7 @@ const Dashboard: React.FC = () => {
 
   function clearRepositories() {
     setRepositories([]);
-    localStorage.setItem('githubRepositories', JSON.stringify([]));
+    localStorage.setItem('@GithubExplore:repositories', JSON.stringify([]));
   }
 
   async function handleAddRepository(event: FormEvent<HTMLFormElement>):
