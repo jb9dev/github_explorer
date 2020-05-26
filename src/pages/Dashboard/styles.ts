@@ -3,7 +3,7 @@ import { shade } from 'polished';
 
 import { colors } from '../../global/variables';
 
-const { dark, dark2, green, grey, grey2, grey3, light } = colors;
+const { dark, dark2, green, grey, grey2, grey3, light, red } = colors;
 
 export const Title = styled.h1`
   max-width: 450px;
@@ -17,6 +17,11 @@ export const Form = styled.form`
   display: flex;
   max-width: 715px;
   margin-top: 40px;
+  align-items: center;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
 
   input,
   button {
@@ -24,7 +29,7 @@ export const Form = styled.form`
   }
 
   input {
-    flex: 1;
+    width: 100%;
     padding: 0 24px;
     color: ${dark};
     border: 0;
@@ -33,10 +38,27 @@ export const Form = styled.form`
     &::placeholder {
       color: ${grey};
     }
+
+    &[name="githubUser"] {
+      border-radius: 5px;
+    }
+
+    @media (min-width: 980px) {
+      flex: 1;
+    }
+  }
+
+  .bar-separator {
+    font-size: 70px;
+    color: ${grey2};
+
+    @media (max-width: 768px) {
+      display: none;
+    }
   }
 
   button {
-    width: 210px;
+    width: 100%;
     color: ${light};
     font-weight: 700;
     background-color: ${green};
@@ -47,6 +69,10 @@ export const Form = styled.form`
     &:hover {
       background: ${shade(0.2, green)};
     }
+
+    @media (min-width: 1024px) {
+      width: 210px;
+    }
   }
 `;
 
@@ -54,11 +80,18 @@ export const Message = styled.span`
   display: block;
   height: 16px;
   margin: 10px 0;
-  color: ${green};
   transition: opacity 300ms ease-in;
 
-  &.message-added {
+  &.remove-message {
     opacity: 0;
+  }
+
+  &.success {
+    color: ${green};
+  }
+
+  &.error {
+    color: ${red};
   }
 `;
 
