@@ -5,7 +5,7 @@ import api from '../../services/api';
 
 import logoImg from '../../assets/logo.svg';
 
-import { Title, Form, Repositories, Message } from './styles';
+import { Title, Form, Repositories, ClearRepositories, Message } from './styles';
 
 interface Repository {
   full_name: string;
@@ -31,6 +31,14 @@ const Dashboard: React.FC = () => {
   const [repositoryName, setRepositoryName] = useState('');
   const [message, setMessage] = useState(messageInitialState);
   const [messageClass, setMessageClass] = useState('');
+
+  useEffect(() => {
+    const localRepositoriesStoraged = localStorage.getItem('githubRepositories');
+    if (localRepositoriesStoraged) {
+      const repositoriesStoraged = JSON.parse(localRepositoriesStoraged);
+      repositoriesStoraged.length && setRepositories(repositoriesStoraged);
+    }
+  }, [])
 
   useEffect(() => {
     if (githubUser.length > 2 && repositoryName.length > 2) {
@@ -62,6 +70,11 @@ const Dashboard: React.FC = () => {
     setGithubUser('');
   }
 
+  function clearRepositories() {
+    setRepositories([]);
+    localStorage.setItem('githubRepositories', JSON.stringify([]));
+  }
+
   async function handleAddRepository(event: FormEvent<HTMLFormElement>):
     Promise<void> {
       event.preventDefault();
@@ -70,6 +83,25 @@ const Dashboard: React.FC = () => {
         const newRepository = `${githubUser}/${repositoryName}`
         const response = await api.get<Repository>(`/repos/${newRepository}`);
         const repository = response.data;
+        const localStorageRepositories = localStorage.getItem('githubRepositories');
+
+        if (localStorageRepositories) {
+          const localRepositories = JSON.parse(localStorageRepositories);
+          const newLocalRepositories: Repository[] = [
+            ...localRepositories,
+            repository
+          ];
+
+          localStorage.setItem(
+            'githubRepositories',
+            JSON.stringify(newLocalRepositories)
+          );
+        } else {
+          localStorage.setItem(
+            'githubRepositories',
+            JSON.stringify(repository)
+          );
+        }
 
         setRepositories([...repositories, repository]);
         clearForm();
@@ -110,6 +142,14 @@ const Dashboard: React.FC = () => {
           placeholder="Nome do repositório" />
         <button disabled={disableSubmit} type="submit">Pesquisar</button>
       </Form>
+      {
+        repositories.length > 0
+        && <ClearRepositories>
+          <span className="clear" onClick={clearRepositories}>
+            Limpar lista de repositórios
+          </span>
+        </ClearRepositories>
+      }
       <Message className={messageClass}>{message.text}</Message>
       <Repositories>
       {

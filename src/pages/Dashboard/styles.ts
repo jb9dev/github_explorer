@@ -89,6 +89,19 @@ export const Form = styled.form<FormProps>`
   }
 `;
 
+export const ClearRepositories = styled.p`
+  display: flex;
+  max-width: 715px;
+  margin-top: 10px;
+  justify-content: flex-end;
+
+  .clear {
+    color: ${red};
+    text-decoration: underline;
+    cursor: pointer;
+  }
+`;
+
 export const Message = styled.span`
   display: block;
   height: 16px;
