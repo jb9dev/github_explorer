@@ -146,7 +146,7 @@ const Dashboard: React.FC = () => {
           <Link
             key={repository.full_name}
             className="repository"
-            to="/repository"
+            to={`/repositories/${repository.full_name}`}
           >
             <img
               className="repository__image"
