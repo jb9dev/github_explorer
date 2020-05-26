@@ -1,82 +1,74 @@
-import React from 'react';
+import React, { useState, FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { FiChevronRight } from 'react-icons/fi';
+import api from '../../services/api';
 
 import logoImg from '../../assets/logo.svg';
 
 import { Title, Form, Repositories } from './styles';
 
-const Dashboard: React.FC = () => (
-  <>
-    <img src={logoImg} alt="Github Explorer" />
-    <Title>Explore repositórios no Github</Title>
-    <Form>
-      <input placeholder="Digite o nome do repositório" />
-      <button type="submit">Pesquisar</button>
-    </Form>
-    <Repositories>
-      <Link className="repository" to="/repository">
-        <img
-          className="repository__image"
-          src="https://avatars2.githubusercontent.com/u/36506383?s=460&u=32afcf722c7e5775b96549d65ba7f64e28b406d0&v=4"
-          alt="Foto do perfil no Github"
-        />
-        <div className="repository__wrapper">
-          <strong className="repository__title">
-            Jean-Barbosa-9/Github-Explore
-          </strong>
-          <p className="repository__description">
-            Esse é um projeto que é feito no bootcamp da Rocketseat para fazer
-            uma introdução ao React. Aqui inicialmente o projeto está sendo
-            feito da mesma forma como é apresentado no treinamento, mas
-            futuramente implementarei mais funcionalidades que sejam
-            interessantes e pertinentes à ideia.
-          </p>
-        </div>
-        <FiChevronRight className="repository__icon" size={20} />
-      </Link>
-      <Link className="repository" to="/repository">
-        <img
-          className="repository__image"
-          src="https://avatars2.githubusercontent.com/u/36506383?s=460&u=32afcf722c7e5775b96549d65ba7f64e28b406d0&v=4"
-          alt="Foto do perfil no Github"
-        />
-        <div className="repository__wrapper">
-          <strong className="repository__title">
-            Jean-Barbosa-9/Github-Explore
-          </strong>
-          <p className="repository__description">
-            Esse é um projeto que é feito no bootcamp da Rocketseat para fazer
-            uma introdução ao React. Aqui inicialmente o projeto está sendo
-            feito da mesma forma como é apresentado no treinamento, mas
-            futuramente implementarei mais funcionalidades que sejam
-            interessantes e pertinentes à ideia.
-          </p>
-        </div>
-        <FiChevronRight className="repository__icon" size={20} />
-      </Link>
-      <Link className="repository" to="/repository">
-        <img
-          className="repository__image"
-          src="https://avatars2.githubusercontent.com/u/36506383?s=460&u=32afcf722c7e5775b96549d65ba7f64e28b406d0&v=4"
-          alt="Foto do perfil no Github"
-        />
-        <div className="repository__wrapper">
-          <strong className="repository__title">
-            Jean-Barbosa-9/Github-Explore
-          </strong>
-          <p className="repository__description">
-            Esse é um projeto que é feito no bootcamp da Rocketseat para fazer
-            uma introdução ao React. Aqui inicialmente o projeto está sendo
-            feito da mesma forma como é apresentado no treinamento, mas
-            futuramente implementarei mais funcionalidades que sejam
-            interessantes e pertinentes à ideia.
-          </p>
-        </div>
-        <FiChevronRight className="repository__icon" size={20} />
-      </Link>
-    </Repositories>
-  </>
-);
+interface Repository {
+  full_name: string;
+  description: string;
+  owner: {
+    login: string;
+    avatar_url: string;
+  }
+}
+
+const Dashboard: React.FC = () => {
+  const [repositories, setRepositories] = useState<Repository[]>([]);
+  const [newRepository, setNewRepository] = useState('');
+
+  async function handleAddRepository(event: FormEvent<HTMLFormElement>):
+    Promise<void> {
+      event.preventDefault();
+      const response = await api.get<Repository>(`/repos/${newRepository}`);
+      const repository = response.data;
+
+      setRepositories([...repositories, repository]);
+      setNewRepository('');
+    }
+
+  return (
+    <React.Fragment>
+      <img src={logoImg} alt="Github Explorer" />
+      <Title>Explore repositórios no Github</Title>
+      <Form onSubmit={handleAddRepository}>
+        <input
+          value={newRepository}
+          onChange={({target}) => setNewRepository(target.value)}
+          placeholder="Digite o nome do repositório" />
+        <button type="submit">Pesquisar</button>
+      </Form>
+      <Repositories>
+      {
+        repositories.map(repository => (
+          <Link
+            key={repository.full_name}
+            className="repository"
+            to="/repository"
+          >
+            <img
+              className="repository__image"
+              src={repository.owner.avatar_url}
+              alt={repository.owner.login}
+            />
+            <div className="repository__wrapper">
+              <strong className="repository__title">
+                {repository.full_name}
+              </strong>
+              <p className="repository__description">
+                {repository.description}
+              </p>
+            </div>
+            <FiChevronRight className="repository__icon" size={20} />
+          </Link>
+        ))
+      }
+      </Repositories>
+    </React.Fragment>
+  );
+};
 
 export default Dashboard;
