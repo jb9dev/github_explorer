@@ -41,6 +41,13 @@ const Dashboard: React.FC = () => {
   }, [])
 
   useEffect(() => {
+    localStorage.setItem(
+      'githubRepositories',
+      JSON.stringify(repositories)
+    );
+  }, [repositories])
+
+  useEffect(() => {
     if (githubUser.length > 2 && repositoryName.length > 2) {
       setDisableSubmit(false)
     } else {
@@ -83,25 +90,6 @@ const Dashboard: React.FC = () => {
         const newRepository = `${githubUser}/${repositoryName}`
         const response = await api.get<Repository>(`/repos/${newRepository}`);
         const repository = response.data;
-        const localStorageRepositories = localStorage.getItem('githubRepositories');
-
-        if (localStorageRepositories) {
-          const localRepositories = JSON.parse(localStorageRepositories);
-          const newLocalRepositories: Repository[] = [
-            ...localRepositories,
-            repository
-          ];
-
-          localStorage.setItem(
-            'githubRepositories',
-            JSON.stringify(newLocalRepositories)
-          );
-        } else {
-          localStorage.setItem(
-            'githubRepositories',
-            JSON.stringify(repository)
-          );
-        }
 
         setRepositories([...repositories, repository]);
         clearForm();
