@@ -1,6 +1,9 @@
 import { createGlobalStyle } from 'styled-components';
 
+import { colors } from './variables';
 import GithubBackground from '../assets/background_img.svg';
+
+const { light2 } = colors;
 
 export default createGlobalStyle`
   * {
@@ -11,7 +14,7 @@ export default createGlobalStyle`
   }
 
   body {
-    background-color: #f0f0f5;
+    background-color: ${light2};
     background-image: url(${GithubBackground});
     background-repeat: no-repeat;
     background-position: 70% top;
