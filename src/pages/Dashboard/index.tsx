@@ -1,4 +1,4 @@
-import React, { useState, FormEvent } from 'react';
+import React, { useState, FormEvent, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FiChevronRight } from 'react-icons/fi';
 import api from '../../services/api';
@@ -16,19 +16,36 @@ interface Repository {
   }
 }
 
+interface ShowMessage {
+  message: string;
+  status: string;
+  autoRemove: boolean;
+}
+
 const Dashboard: React.FC = () => {
+  const [disableSubmit, setDisableSubmit] = useState(true);
   const [repositories, setRepositories] = useState<Repository[]>([]);
   const [githubUser, setGithubUser] = useState('');
   const [repositoryName, setRepositoryName] = useState('');
   const [message, setMessage] = useState('');
   const [messageClass, setMessageClass] = useState('');
 
-  function showMessage(message: string, className: string) {
+  useEffect(() => {
+    if (githubUser.length > 3 && repositoryName.length > 3) {
+      setDisableSubmit(false)
+    } else {
+      setDisableSubmit(true)
+    }
+  }, [disableSubmit, githubUser, repositoryName])
+
+  function showMessage({ message, status, autoRemove }: ShowMessage) {
     setMessage(message);
-    setMessageClass(className);
-    setTimeout(() => {
-      setMessageClass(`${className} remove-message`);
-    }, 2700)
+    setMessageClass(status);
+    if (autoRemove) {
+      setTimeout(() => {
+        setMessageClass(`${status} remove-message`);
+      }, 2700)
+    }
   }
 
   function clearMessage() {
@@ -48,17 +65,27 @@ const Dashboard: React.FC = () => {
     Promise<void> {
       event.preventDefault();
 
-      const newRepository = `${githubUser}/${repositoryName}`
-      const response = await api.get<Repository>(`/repos/${newRepository}`);
-      const repository = response.data;
+      try {
+        const newRepository = `${githubUser}/${repositoryName}`
+        const response = await api.get<Repository>(`/repos/${newRepository}`);
+        const repository = response.data;
 
-      setRepositories([...repositories, repository]);
-      clearForm();
-      showMessage(
-        'Repositório adicionado com sucesso ao final da lista!',
-        'success'
-      );
-      clearMessage();
+        setRepositories([...repositories, repository]);
+        clearForm();
+        showMessage({
+          message: 'Repositório adicionado com sucesso ao final da lista!',
+          status: 'success',
+          autoRemove: true
+        });
+        clearMessage();
+      } catch {
+        showMessage({
+          message: 'Repositório não encontrado. Por favor revise os nomes preenchidos',
+          status: 'error',
+          autoRemove: false
+        });
+      }
+
     }
 
   return (
@@ -72,13 +99,13 @@ const Dashboard: React.FC = () => {
           value={githubUser}
           onChange={({target}) => setGithubUser(target.value)}
           placeholder="Usuário no Github" />
-        <span className='bar-separator'>/</span>
+        <span className='bar-disableSubmitseparator'>/</span>
         <input
           name="githubRepository"
           value={repositoryName}
           onChange={({target}) => setRepositoryName(target.value)}
           placeholder="Nome do repositório" />
-        <button type="submit">Pesquisar</button>
+        <button disabled={disableSubmit} type="submit">Pesquisar</button>
       </Form>
       <Message className={messageClass}>{message}</Message>
       <Repositories>

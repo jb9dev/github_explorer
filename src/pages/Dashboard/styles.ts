@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { shade } from 'polished';
+import { shade, grayscale } from 'polished';
 
 import { colors } from '../../global/variables';
 
@@ -68,6 +68,11 @@ export const Form = styled.form`
 
     &:hover {
       background: ${shade(0.2, green)};
+    }
+
+    &:disabled {
+      background: ${grayscale(green)};
+      cursor: not-allowed;
     }
 
     @media (min-width: 1024px) {
