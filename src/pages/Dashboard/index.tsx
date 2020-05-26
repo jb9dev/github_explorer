@@ -18,27 +18,47 @@ interface Repository {
 
 const Dashboard: React.FC = () => {
   const [repositories, setRepositories] = useState<Repository[]>([]);
-  const [newRepository, setNewRepository] = useState('');
+  const [githubUser, setGithubUser] = useState('');
+  const [repositoryName, setRepositoryName] = useState('');
   const [message, setMessage] = useState('');
   const [messageClass, setMessageClass] = useState('');
+
+  function showMessage(message: string, className: string) {
+    setMessage(message);
+    setMessageClass(className);
+    setTimeout(() => {
+      setMessageClass(`${className} remove-message`);
+    }, 2700)
+  }
+
+  function clearMessage() {
+
+    setTimeout(() => {
+      setMessage('');
+      setMessageClass('');
+    }, 3500)
+  }
+
+  function clearForm() {
+    setRepositoryName('');
+    setGithubUser('');
+  }
 
   async function handleAddRepository(event: FormEvent<HTMLFormElement>):
     Promise<void> {
       event.preventDefault();
+
+      const newRepository = `${githubUser}/${repositoryName}`
       const response = await api.get<Repository>(`/repos/${newRepository}`);
       const repository = response.data;
 
       setRepositories([...repositories, repository]);
-      setNewRepository('');
-      setMessage('Repositório adicionado com sucesso ao final da lista!')
-      setTimeout(() => {
-        setMessageClass('message-added');
-      }, 3000)
-
-      setTimeout(() => {
-        setMessage('');
-        setMessageClass('');
-      }, 3500)
+      clearForm();
+      showMessage(
+        'Repositório adicionado com sucesso ao final da lista!',
+        'success'
+      );
+      clearMessage();
     }
 
   return (
@@ -47,9 +67,17 @@ const Dashboard: React.FC = () => {
       <Title>Explore repositórios no Github</Title>
       <Form onSubmit={handleAddRepository}>
         <input
-          value={newRepository}
-          onChange={({target}) => setNewRepository(target.value)}
-          placeholder="Digite o nome do repositório" />
+          name="githubUser"
+          autoFocus={true}
+          value={githubUser}
+          onChange={({target}) => setGithubUser(target.value)}
+          placeholder="Usuário no Github" />
+        <span className='bar-separator'>/</span>
+        <input
+          name="githubRepository"
+          value={repositoryName}
+          onChange={({target}) => setRepositoryName(target.value)}
+          placeholder="Nome do repositório" />
         <button type="submit">Pesquisar</button>
       </Form>
       <Message className={messageClass}>{message}</Message>
